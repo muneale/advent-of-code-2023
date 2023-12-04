@@ -8,6 +8,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n01"
 	"github.com/muneale/advent-of-code-2023/internal/n02"
 	"github.com/muneale/advent-of-code-2023/internal/n03"
+	"github.com/muneale/advent-of-code-2023/internal/n04"
 )
 
 func main() {
@@ -21,6 +22,8 @@ func main() {
 		runDay02()
 	case "03":
 		runDay03()
+	case "04":
+		runDay04()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -71,4 +74,23 @@ func runDay03() {
 	m = n03.GetMatrix(string(input))
 	sum = m.GetSchamticGearRatioSum()
 	fmt.Printf("Part 2: %d\n", sum)
+}
+
+func runDay04() {
+
+	input, _ := os.ReadFile("./input/n04.txt")
+
+	c := n04.GetCards(string(input))
+
+	sum := 0
+	for i := range c {
+		// c[i].Print()
+		sum += c[i].Points()
+	}
+
+	fmt.Printf("Part 1: %v\n", sum)
+
+	copies := n04.CountCardCopies(c)
+
+	fmt.Printf("Part 2: %v\n", copies)
 }
