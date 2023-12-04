@@ -7,6 +7,7 @@ import (
 
 	"github.com/muneale/advent-of-code-2023/internal/n01"
 	"github.com/muneale/advent-of-code-2023/internal/n02"
+	"github.com/muneale/advent-of-code-2023/internal/n03"
 )
 
 func main() {
@@ -18,6 +19,8 @@ func main() {
 		runDay01()
 	case "02":
 		runDay02()
+	case "03":
+		runDay03()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -56,4 +59,14 @@ func runDay02() {
 	sum = n02.GetSumOfPowerMinimumCombinations(games)
 
 	fmt.Printf("Part 2: %d\n", sum)
+}
+
+func runDay03() {
+	input, _ := os.ReadFile("./input/n03.txt")
+
+	matrix := n03.GetMatrix(string(input))
+
+	sum := matrix.GetEngineSchematicSum()
+
+	fmt.Printf("Part 1: %d\n", sum)
 }
