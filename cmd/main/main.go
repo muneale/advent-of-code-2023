@@ -64,9 +64,11 @@ func runDay02() {
 func runDay03() {
 	input, _ := os.ReadFile("./input/n03.txt")
 
-	matrix := n03.GetMatrix(string(input))
-
-	sum := matrix.GetEngineSchematicSum()
-
+	m := n03.GetMatrix(string(input))
+	sum := m.GetEngineSchematicSum()
 	fmt.Printf("Part 1: %d\n", sum)
+
+	m = n03.GetMatrix(string(input))
+	sum = m.GetSchamticGearRatioSum()
+	fmt.Printf("Part 2: %d\n", sum)
 }
