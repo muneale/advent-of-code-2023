@@ -9,6 +9,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n02"
 	"github.com/muneale/advent-of-code-2023/internal/n03"
 	"github.com/muneale/advent-of-code-2023/internal/n04"
+	"github.com/muneale/advent-of-code-2023/internal/n05"
 )
 
 func main() {
@@ -24,6 +25,8 @@ func main() {
 		runDay03()
 	case "04":
 		runDay04()
+	case "05":
+		runDay05()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -93,4 +96,15 @@ func runDay04() {
 	copies := n04.CountCardCopies(c)
 
 	fmt.Printf("Part 2: %v\n", copies)
+}
+
+func runDay05() {
+
+	input, _ := os.ReadFile("./input/n05.txt")
+
+	almanac := n05.NewAlmanac(string(input))
+
+	min := almanac.GetMinimumLocation()
+
+	fmt.Printf("Part 1: %v\n", min)
 }
