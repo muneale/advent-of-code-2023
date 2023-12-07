@@ -16,8 +16,39 @@ type Map struct {
 	length      int
 }
 
+type Interval struct {
+	Min, Max int
+}
+
+func (i *Interval) Overlap(j *Interval) (inside []Interval, outside []Interval) {
+	inside, outside = []Interval{}, []Interval{}
+
+	if j.Max < i.Min || j.Min > i.Max {
+		outside = append(outside, Interval{Min: j.Min, Max: j.Max})
+		return inside, outside
+	}
+
+	if j.Min < i.Min {
+		outside = append(outside, Interval{Min: j.Min, Max: i.Min - 1})
+		if j.Max <= i.Max {
+			inside = append(inside, Interval{Min: i.Min, Max: j.Max})
+		} else {
+			inside = append(inside, Interval{Min: i.Min, Max: i.Max})
+			outside = append(outside, Interval{Min: i.Max + 1, Max: j.Max})
+		}
+	} else if j.Min >= i.Min && j.Min <= i.Max {
+		if j.Max <= i.Max {
+			inside = append(inside, Interval{Min: j.Min, Max: j.Max})
+		} else {
+			inside = append(inside, Interval{Min: j.Min, Max: i.Max})
+			outside = append(outside, Interval{Min: i.Max + 1, Max: j.Max})
+		}
+	}
+	return inside, outside
+}
+
 type Almanac struct {
-	seeds                 []int
+	seeds                 [][]int
 	seedToSoilMap         []Map
 	soilToFertilizerMap   []Map
 	fertilizerToWaterMap  []Map
@@ -27,7 +58,7 @@ type Almanac struct {
 	humidityToLocation    []Map
 }
 
-func NewAlmanac(data string) *Almanac {
+func NewAlmanac(data string, rangeMode bool) *Almanac {
 	almanac := &Almanac{}
 	lines := strings.Split(data, "\n")
 	for i := 0; i < len(lines); i++ {
@@ -44,10 +75,18 @@ func NewAlmanac(data string) *Almanac {
 
 		if key == "seeds" {
 			seedsStr := strings.Split(strings.TrimSpace(keyValue[1]), " ")
-			seeds := []int{}
-			for _, seedStr := range seedsStr {
-				seed, _ := strconv.Atoi(seedStr)
-				seeds = append(seeds, seed)
+			seeds := [][]int{}
+			if rangeMode {
+				for k := 0; k < len(seedsStr); k += 2 {
+					seed, _ := strconv.Atoi(seedsStr[k])
+					seedRange, _ := strconv.Atoi(seedsStr[k+1])
+					seeds = append(seeds, []int{seed, seedRange})
+				}
+			} else {
+				for _, seedStr := range seedsStr {
+					seed, _ := strconv.Atoi(seedStr)
+					seeds = append(seeds, []int{seed})
+				}
 			}
 			almanac.seeds = seeds
 		} else if mapRe.MatchString(key) {
@@ -90,71 +129,177 @@ func NewAlmanac(data string) *Almanac {
 	return almanac
 }
 
-func getValueFromMaps(maps *[]Map, key int) int {
+func getValuesFromMaps(maps *[]Map, key int) []int {
 
-	value := key
+	values := []int{}
 
 	for _, m := range *maps {
 		if key < m.source || key > m.source+m.length {
 			continue
 		}
 		offset := key - m.source
-		value = m.destination + offset
+		values = append(values, m.destination+offset)
 	}
 
-	return value
+	if len(values) == 0 {
+		values = append(values, key)
+	}
+
+	return values
+}
+
+func getRangesFromMaps(maps *[]Map, min int, max int) [][]int {
+
+	intervals := [][]int{}
+	currInt := Interval{min, max}
+	atLeastOne := false
+	for _, m := range *maps {
+		sourceInt := Interval{m.source, m.source + m.length}
+		inside, _ := sourceInt.Overlap(&currInt)
+		if len(inside) > 0 {
+			atLeastOne = true
+			offset := m.destination - m.source
+			intervals = append(intervals, []int{inside[0].Min, inside[0].Max, offset})
+		}
+		// fmt.Printf("Current: %v, Source: %v, Inside: %v, Outside: %v\n", currInt, sourceInt, inside, outside)
+	}
+
+	if !atLeastOne {
+		return [][]int{{min, max}}
+	}
+
+	minVal, maxVal := intervals[0][0], intervals[0][1]
+	values := [][]int{{intervals[0][0] + intervals[0][2], intervals[0][1] + intervals[0][2]}}
+	for i := 1; i < len(intervals); i++ {
+		if intervals[i][0] < minVal {
+			minVal = intervals[i][0]
+		}
+		if intervals[i][1] > maxVal {
+			maxVal = intervals[i][1]
+		}
+		values = append(values, []int{intervals[i][0] + intervals[i][2], intervals[i][1] + intervals[i][2]})
+	}
+
+	if minVal > min {
+		values = append(values, []int{min, minVal})
+	}
+	if maxVal < max {
+		values = append(values, []int{maxVal, max})
+	}
+
+	return values
+}
+
+func processSingleSeed(a *Almanac, seed int) int {
+
+	min := math.MaxInt
+
+	soils := getValuesFromMaps(&a.seedToSoilMap, seed)
+
+	for _, s := range soils {
+		fertilizers := getValuesFromMaps(&a.soilToFertilizerMap, s)
+
+		for _, f := range fertilizers {
+			waters := getValuesFromMaps(&a.fertilizerToWaterMap, f)
+
+			for _, w := range waters {
+				lights := getValuesFromMaps(&a.waterToLightMap, w)
+
+				for _, l := range lights {
+					temperatures := getValuesFromMaps(&a.lightToTemperature, l)
+
+					for _, t := range temperatures {
+
+						humidities := getValuesFromMaps(&a.temperatureToHumidity, t)
+
+						for _, h := range humidities {
+
+							locations := getValuesFromMaps(&a.humidityToLocation, h)
+
+							for _, loc := range locations {
+
+								// fmt.Printf("Seed: %d, Soil: %d, Fertilizer: %d, Water: %d, Light: %d, Temperature: %d, Humidity: %d, Location: %d\n", seed, s, f, w, l, t, h, l)
+
+								if loc < min {
+									min = loc
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return min
 }
 
 func (m *Almanac) GetMinimumLocation() int {
 
 	min := math.MaxInt
 
-	soils := []int{}
-
 	for _, seed := range m.seeds {
-		value := getValueFromMaps(&m.seedToSoilMap, seed)
-		soils = append(soils, value)
+
+		if len(seed) == 1 {
+			m := processSingleSeed(m, seed[0])
+			if m < min {
+				min = m
+			}
+
+		} else {
+			m := processRangeSeed(m, seed[0], seed[1])
+			// fmt.Printf("Seed: %d, Min: %d\n", seed[0], m)
+			if m < min {
+				min = m
+			}
+		}
 	}
 
-	fertilizers := []int{}
-	for _, soil := range soils {
-		value := getValueFromMaps(&m.soilToFertilizerMap, soil)
-		fertilizers = append(fertilizers, value)
-	}
+	return min
+}
 
-	waters := []int{}
-	for _, fertilizer := range fertilizers {
-		value := getValueFromMaps(&m.fertilizerToWaterMap, fertilizer)
-		waters = append(waters, value)
-	}
+func processRangeSeed(a *Almanac, seed int, seedRange int) int {
 
-	lights := []int{}
-	for _, water := range waters {
-		value := getValueFromMaps(&m.waterToLightMap, water)
-		lights = append(lights, value)
-	}
+	min := math.MaxInt
 
-	temperatures := []int{}
-	for _, light := range lights {
-		value := getValueFromMaps(&m.lightToTemperature, light)
-		temperatures = append(temperatures, value)
-	}
+	soils := getRangesFromMaps(&a.seedToSoilMap, seed, seed+seedRange)
 
-	humidities := []int{}
-	for _, temperature := range temperatures {
-		value := getValueFromMaps(&m.temperatureToHumidity, temperature)
-		humidities = append(humidities, value)
-	}
+	// fmt.Printf("Soils: %v\n", soils)
 
-	locations := []int{}
-	for _, humidity := range humidities {
-		value := getValueFromMaps(&m.humidityToLocation, humidity)
-		locations = append(locations, value)
-	}
+	for _, s := range soils {
+		fertilizers := getRangesFromMaps(&a.soilToFertilizerMap, s[0], s[1])
 
-	for _, location := range locations {
-		if location < min {
-			min = location
+		// fmt.Printf("Fertilizers: %v\n", fertilizers)
+
+		for _, f := range fertilizers {
+			waters := getRangesFromMaps(&a.fertilizerToWaterMap, f[0], f[1])
+
+			for _, w := range waters {
+				lights := getRangesFromMaps(&a.waterToLightMap, w[0], w[1])
+
+				for _, l := range lights {
+					temperatures := getRangesFromMaps(&a.lightToTemperature, l[0], l[1])
+
+					for _, t := range temperatures {
+
+						humidities := getRangesFromMaps(&a.temperatureToHumidity, t[0], t[1])
+
+						for _, h := range humidities {
+
+							locations := getRangesFromMaps(&a.humidityToLocation, h[0], h[1])
+
+							for _, loc := range locations {
+
+								// fmt.Printf("Seed: %d, Soil: %d, Fertilizer: %d, Water: %d, Light: %d, Temperature: %d, Humidity: %d, Location: %d\n", seed, s, f, w, l, t, h, l)
+								// fmt.Printf("Loc: %d\n", loc[0])
+								if loc[0] < min {
+									min = loc[0]
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 

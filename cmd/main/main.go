@@ -102,9 +102,11 @@ func runDay05() {
 
 	input, _ := os.ReadFile("./input/n05.txt")
 
-	almanac := n05.NewAlmanac(string(input))
-
+	almanac := n05.NewAlmanac(string(input), false)
 	min := almanac.GetMinimumLocation()
-
 	fmt.Printf("Part 1: %v\n", min)
+
+	almanac = n05.NewAlmanac(string(input), true)
+	min = almanac.GetMinimumLocation()
+	fmt.Printf("Part 2: %v\n", min)
 }
