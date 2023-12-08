@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/muneale/advent-of-code-2023/internal/n01"
@@ -10,6 +11,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n03"
 	"github.com/muneale/advent-of-code-2023/internal/n04"
 	"github.com/muneale/advent-of-code-2023/internal/n05"
+	"github.com/muneale/advent-of-code-2023/internal/n06"
 )
 
 func main() {
@@ -27,6 +29,8 @@ func main() {
 		runDay04()
 	case "05":
 		runDay05()
+	case "06":
+		runDay06()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -109,4 +113,36 @@ func runDay05() {
 	almanac = n05.NewAlmanac(string(input), true)
 	min = almanac.GetMinimumLocation()
 	fmt.Printf("Part 2: %v\n", min)
+}
+
+func runDay06() {
+
+	input, _ := os.ReadFile("./input/n06.txt")
+
+	dts := n06.ParseDistanceAndTime(string(input))
+
+	wins := 1
+	for _, dt := range *dts {
+		// fmt.Printf("Distance: %v | Time: %v | Wins: %v\n", dt.Distance, dt.Time, n06.WinningCombinations(dt))
+		wins *= n06.WinningCombinations(dt)
+	}
+
+	fmt.Printf("Part 1: %d\n", wins)
+
+	realDistance, realTime := "", ""
+	for _, dt := range *dts {
+		realDistance += strconv.Itoa(dt.Distance)
+		realTime += strconv.Itoa(dt.Time)
+	}
+
+	d, _ := strconv.Atoi(realDistance)
+	t, _ := strconv.Atoi(realTime)
+	dt := n06.DistanceAndTime{
+		Distance: d,
+		Time:     t,
+	}
+
+	wins = n06.WinningCombinations(dt)
+
+	fmt.Printf("Part 2: %d\n", wins)
 }
