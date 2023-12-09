@@ -12,6 +12,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n04"
 	"github.com/muneale/advent-of-code-2023/internal/n05"
 	"github.com/muneale/advent-of-code-2023/internal/n06"
+	"github.com/muneale/advent-of-code-2023/internal/n07"
 )
 
 func main() {
@@ -31,6 +32,8 @@ func main() {
 		runDay05()
 	case "06":
 		runDay06()
+	case "07":
+		runDay07()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -145,4 +148,22 @@ func runDay06() {
 	wins = n06.WinningCombinations(dt)
 
 	fmt.Printf("Part 2: %d\n", wins)
+}
+
+func runDay07() {
+
+	input, _ := os.ReadFile("./input/n07.txt")
+
+	games := n07.ParseGames(string(input))
+
+	n07.OrderGames(games)
+
+	totalWinnings := 0
+
+	for i, g := range *games {
+		totalWinnings += g.Bid * (i + 1)
+	}
+
+	fmt.Printf("Part 1: %v\n", totalWinnings)
+
 }
