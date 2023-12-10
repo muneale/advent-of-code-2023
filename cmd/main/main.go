@@ -14,6 +14,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n06"
 	"github.com/muneale/advent-of-code-2023/internal/n07"
 	"github.com/muneale/advent-of-code-2023/internal/n08"
+	"github.com/muneale/advent-of-code-2023/internal/n09"
 )
 
 func main() {
@@ -37,6 +38,8 @@ func main() {
 		runDay07()
 	case "08":
 		runDay08()
+	case "09":
+		runDay09()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -193,4 +196,28 @@ func runDay08() {
 	steps = n08.StepsToGoalMultidimensional(directions, nodes)
 	fmt.Printf("Part 2: %d\n", steps)
 
+}
+
+func runDay09() {
+
+	input, _ := os.ReadFile("./input/n09.txt")
+	sequences := n09.ParseInput(string(input))
+
+	total := 0
+	for _, s := range sequences {
+		predicted := n09.PredictValue(s, false)
+		// fmt.Printf("Sequence: %v | Predicted: %d\n", s, predicted)
+		total += predicted
+	}
+
+	fmt.Printf("Part 1: %d\n", total)
+
+	total = 0
+	for _, s := range sequences {
+		predicted := n09.PredictValue(s, true)
+		// fmt.Printf("Sequence: %v | Predicted: %d\n", s, predicted)
+		total += predicted
+	}
+
+	fmt.Printf("Part 2: %d\n", total)
 }
