@@ -188,7 +188,9 @@ func runDay08() {
 	directions, nodes := n08.ParseInput(string(input))
 
 	steps := n08.StepsToGoal(directions, nodes)
-
 	fmt.Printf("Part 1: %d\n", steps)
+
+	steps = n08.StepsToGoalMultidimensional(directions, nodes)
+	fmt.Printf("Part 2: %d\n", steps)
 
 }

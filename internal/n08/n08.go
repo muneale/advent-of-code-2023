@@ -12,6 +12,8 @@ var directions = map[rune]int{
 }
 
 var directionsRE = regexp.MustCompile(`[\(\),]`)
+var endsWithARE = regexp.MustCompile(`.*A$`)
+var endsWithZRE = regexp.MustCompile(`.*Z$`)
 
 func ParseInput(input string) (*[]int, *map[string][]string) {
 	lines := strings.Split(input, "\n")
@@ -57,4 +59,58 @@ func StepsToGoal(directions *[]int, nodes *map[string][]string) int {
 		}
 
 	}
+}
+
+func StepsToGoalMultidimensional(directions *[]int, nodes *map[string][]string) int {
+
+	currPos := []string{}
+	for k := range *nodes {
+		if endsWithARE.MatchString(k) {
+			currPos = append(currPos, k)
+		}
+	}
+
+	totalSteps := []int{}
+	for _, c := range currPos {
+		steps := 0
+		for {
+			currDir := steps % len(*directions)
+
+			// Update position
+			c = (*nodes)[c][(*directions)[currDir]]
+
+			// Increase the steps
+			steps++
+
+			// If the position is the goal, return the steps
+			if endsWithZRE.MatchString(c) {
+				totalSteps = append(totalSteps, steps)
+				break
+			}
+		}
+	}
+
+	return lcm(totalSteps...)
+}
+
+// Greatest common divisor (GCD) via Euclidean algorithm
+func gdc(a, b int) int {
+	for b != 0 {
+		t := b
+		b = a % b
+		a = t
+	}
+	return a
+}
+
+// Find Least Common Multiple (LCM) via GCD
+func lcm(integers ...int) int {
+	a, b := integers[0], integers[1]
+	result := a * b / gdc(a, b)
+
+	for i := 2; i < len(integers); i++ {
+		result = lcm(result, integers[i])
+	}
+
+	return result
 }
