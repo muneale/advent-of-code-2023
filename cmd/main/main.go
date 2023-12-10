@@ -156,14 +156,24 @@ func runDay07() {
 
 	games := n07.ParseGames(string(input))
 
-	n07.OrderGames(games)
+	n07.OrderGames(games, false)
 
 	totalWinnings := 0
-
 	for i, g := range *games {
 		totalWinnings += g.Bid * (i + 1)
 	}
 
 	fmt.Printf("Part 1: %v\n", totalWinnings)
 
+	gamesWithJolly := n07.ParseGames(string(input))
+
+	n07.OrderGames(gamesWithJolly, true)
+
+	totalWinnings = 0
+	for i, g := range *gamesWithJolly {
+		// fmt.Printf("Game: %v | Bid: %d | Score: %s | Rank: %d\n", g.Hand, g.Bid, n07.ReversedScore[n07.GetScoreWithJolly(&g)], i+1)
+		totalWinnings += g.Bid * (i + 1)
+	}
+
+	fmt.Printf("Part 2: %v\n", totalWinnings)
 }
