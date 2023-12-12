@@ -15,6 +15,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n07"
 	"github.com/muneale/advent-of-code-2023/internal/n08"
 	"github.com/muneale/advent-of-code-2023/internal/n09"
+	"github.com/muneale/advent-of-code-2023/internal/n10"
 )
 
 func main() {
@@ -40,6 +41,8 @@ func main() {
 		runDay08()
 	case "09":
 		runDay09()
+	case "10":
+		runDay10()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -220,4 +223,17 @@ func runDay09() {
 	}
 
 	fmt.Printf("Part 2: %d\n", total)
+}
+
+func runDay10() {
+
+	input, _ := os.ReadFile("./input/n10.txt")
+
+	gameMap := n10.ParseInput(string(input))
+
+	maximum := n10.GetMaximumDistance(&gameMap)
+	fmt.Printf("Part 1: %d\n", maximum)
+
+	nests := n10.GetNests(&gameMap, maximum)
+	fmt.Printf("Part 2: %d\n", nests)
 }
