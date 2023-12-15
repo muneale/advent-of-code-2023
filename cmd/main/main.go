@@ -16,6 +16,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n08"
 	"github.com/muneale/advent-of-code-2023/internal/n09"
 	"github.com/muneale/advent-of-code-2023/internal/n10"
+	"github.com/muneale/advent-of-code-2023/internal/n11"
 )
 
 func main() {
@@ -43,6 +44,8 @@ func main() {
 		runDay09()
 	case "10":
 		runDay10()
+	case "11":
+		runDay11()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -236,4 +239,19 @@ func runDay10() {
 
 	nests := n10.GetNests(&gameMap, maximum)
 	fmt.Printf("Part 2: %d\n", nests)
+}
+
+func runDay11() {
+
+	input, _ := os.ReadFile("./input/n11.txt")
+
+	universe := n11.ParseInput(string(input))
+
+	factor := 2
+	result := n11.SumShortestPath(universe, factor)
+	fmt.Printf("Part 1: %d\n", result)
+
+	factor = 1000000
+	result = n11.SumShortestPath(universe, factor)
+	fmt.Printf("Part 2: %d\n", result)
 }
