@@ -21,6 +21,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n13"
 	"github.com/muneale/advent-of-code-2023/internal/n14"
 	"github.com/muneale/advent-of-code-2023/internal/n15"
+	"github.com/muneale/advent-of-code-2023/internal/n16"
 )
 
 func main() {
@@ -58,6 +59,8 @@ func main() {
 		runDay14()
 	case "15":
 		runDay15()
+	case "16":
+		runDay16()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -320,4 +323,13 @@ func runDay15() {
 
 	sum = n15.HashmapSum(tokens)
 	fmt.Printf("Part 2: %v\n", sum)
+}
+
+func runDay16() {
+
+	input, _ := os.ReadFile("./input/n16.txt")
+
+	g := n16.ParseInput(string(input))
+
+	fmt.Printf("Part 1: %v\n", n16.CountEnergizedTiles(g))
 }
