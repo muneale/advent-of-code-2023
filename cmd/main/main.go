@@ -17,6 +17,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n09"
 	"github.com/muneale/advent-of-code-2023/internal/n10"
 	"github.com/muneale/advent-of-code-2023/internal/n11"
+	"github.com/muneale/advent-of-code-2023/internal/n12"
 )
 
 func main() {
@@ -46,6 +47,8 @@ func main() {
 		runDay10()
 	case "11":
 		runDay11()
+	case "12":
+		runDay12()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -253,5 +256,16 @@ func runDay11() {
 
 	factor = 1000000
 	result = n11.SumShortestPath(universe, factor)
+	fmt.Printf("Part 2: %d\n", result)
+}
+
+func runDay12() {
+
+	input, _ := os.ReadFile("./input/n12.txt")
+
+	result, _ := n12.GetSumCombinations(strings.Split(string(input), "\n"), n12.ParseString)
+	fmt.Printf("Part 1: %d\n", result)
+
+	result, _ = n12.GetSumCombinations(strings.Split(string(input), "\n"), n12.ParseString2)
 	fmt.Printf("Part 2: %d\n", result)
 }
