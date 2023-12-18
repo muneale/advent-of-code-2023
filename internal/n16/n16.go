@@ -18,20 +18,23 @@ func ParseInput(data string) *[][]rune {
 	return &g
 }
 
-func CountEnergizedTiles(g *[][]rune) int {
-
-	en := computeEnergizedGrid(g)
-
+func countTiles(g *[][]int) int {
 	tiles := 0
-	for i := 0; i < len(*en); i++ {
-		for j := 0; j < len((*en)[0]); j++ {
-			if (*en)[i][j] > 0 {
+	for i := 0; i < len(*g); i++ {
+		for j := 0; j < len((*g)[0]); j++ {
+			if (*g)[i][j] > 0 {
 				tiles++
 			}
 		}
 	}
-
 	return tiles
+}
+
+func CountEnergizedTiles(g *[][]rune) int {
+
+	en := computeEnergizedGrid(g)
+
+	return countTiles(en)
 }
 
 func computeEnergizedGrid(g *[][]rune) *[][]int {
@@ -46,6 +49,72 @@ func computeEnergizedGrid(g *[][]rune) *[][]int {
 
 	computeNext(0, 0, 'E', g, &ng, []int{0, 0, 0})
 	return &ng
+}
+
+func ComputeMaxEnergizedGrid(g *[][]rune) int {
+
+	R := len(*g)
+	C := len((*g)[0])
+	max := 0
+
+	ng := make([][]int, R)
+	for i := 0; i < R; i++ {
+		ng[i] = make([]int, C)
+	}
+
+	// Start from left
+	for i := 0; i < R; i++ {
+		computeNext(i, 0, 'E', g, &ng, []int{0, 0, 0})
+		curr := countTiles(&ng)
+		if curr > max {
+			max = curr
+		}
+		ng = make([][]int, R)
+		for i := 0; i < R; i++ {
+			ng[i] = make([]int, C)
+		}
+	}
+
+	// Start from right
+	for i := 0; i < R; i++ {
+		computeNext(i, C-1, 'W', g, &ng, []int{0, 0, 0})
+		curr := countTiles(&ng)
+		if curr > max {
+			max = curr
+		}
+		ng = make([][]int, R)
+		for i := 0; i < R; i++ {
+			ng[i] = make([]int, C)
+		}
+	}
+
+	// Start from top
+	for i := 0; i < C; i++ {
+		computeNext(0, i, 'S', g, &ng, []int{0, 0, 0})
+		curr := countTiles(&ng)
+		if curr > max {
+			max = curr
+		}
+		ng = make([][]int, R)
+		for i := 0; i < R; i++ {
+			ng[i] = make([]int, C)
+		}
+	}
+
+	// Start from bottom
+	for i := 0; i < C; i++ {
+		computeNext(R-1, i, 'N', g, &ng, []int{0, 0, 0})
+		curr := countTiles(&ng)
+		if curr > max {
+			max = curr
+		}
+		ng = make([][]int, R)
+		for i := 0; i < R; i++ {
+			ng[i] = make([]int, C)
+		}
+	}
+
+	return max
 }
 
 func computeNext(i, j int, d rune, g *[][]rune, ng *[][]int, lasts []int) {

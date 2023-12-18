@@ -332,4 +332,6 @@ func runDay16() {
 	g := n16.ParseInput(string(input))
 
 	fmt.Printf("Part 1: %v\n", n16.CountEnergizedTiles(g))
+
+	fmt.Printf("Part 2: %v\n", n16.ComputeMaxEnergizedGrid(g))
 }
