@@ -18,6 +18,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n10"
 	"github.com/muneale/advent-of-code-2023/internal/n11"
 	"github.com/muneale/advent-of-code-2023/internal/n12"
+	"github.com/muneale/advent-of-code-2023/internal/n13"
 )
 
 func main() {
@@ -49,6 +50,8 @@ func main() {
 		runDay11()
 	case "12":
 		runDay12()
+	case "13":
+		runDay13()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -268,4 +271,21 @@ func runDay12() {
 
 	result, _ = n12.GetSumCombinations(strings.Split(string(input), "\n"), n12.ParseString2)
 	fmt.Printf("Part 2: %d\n", result)
+}
+
+func runDay13() {
+
+	input, _ := os.ReadFile("./input/n13.txt")
+
+	mirrors := n13.ParseInput(string(input))
+
+	x, y := 102, 358
+	xor := x ^ y
+	fmt.Printf("XOR: %v | PWR of 2: %v\n", xor, xor&(xor-1) == 0)
+
+	sum := n13.SummarizePattern(mirrors, false)
+	fmt.Printf("Part 1: %v\n", sum)
+
+	sum = n13.SummarizePattern(mirrors, true)
+	fmt.Printf("Part 2: %v\n", sum)
 }
