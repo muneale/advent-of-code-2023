@@ -19,6 +19,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n11"
 	"github.com/muneale/advent-of-code-2023/internal/n12"
 	"github.com/muneale/advent-of-code-2023/internal/n13"
+	"github.com/muneale/advent-of-code-2023/internal/n14"
 )
 
 func main() {
@@ -52,6 +53,8 @@ func main() {
 		runDay12()
 	case "13":
 		runDay13()
+	case "14":
+		runDay14()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
@@ -288,4 +291,17 @@ func runDay13() {
 
 	sum = n13.SummarizePattern(mirrors, true)
 	fmt.Printf("Part 2: %v\n", sum)
+}
+
+func runDay14() {
+
+	input, _ := os.ReadFile("./input/n14.txt")
+	gameMap := n14.ParseInput(string(input))
+
+	weight := n14.GetLoadNorth(gameMap)
+	fmt.Printf("Part 1: %v\n", weight)
+
+	gameMap = n14.ParseInput(string(input))
+	weight = n14.GetLoadCycle(gameMap, 1000000000)
+	fmt.Printf("Part 2: %v\n", weight)
 }
