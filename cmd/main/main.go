@@ -22,6 +22,7 @@ import (
 	"github.com/muneale/advent-of-code-2023/internal/n14"
 	"github.com/muneale/advent-of-code-2023/internal/n15"
 	"github.com/muneale/advent-of-code-2023/internal/n16"
+	"github.com/muneale/advent-of-code-2023/internal/n17"
 )
 
 func main() {
@@ -61,6 +62,8 @@ func main() {
 		runDay15()
 	case "16":
 		runDay16()
+	case "17":
+		n17.Day17()
 	default:
 		fmt.Printf("Invalid day: %s\n", day)
 	}
